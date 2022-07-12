@@ -11,7 +11,7 @@ CONF_FILENAME = 'dir_clean.conf'
 
 RETURN_CODE_CONF_FILE_NOT_FOUND = 1
 
-log = logging.getLogger(__name__)
+log = logging.getLogger(__package__)
 
 
 def parse_cmdline():
