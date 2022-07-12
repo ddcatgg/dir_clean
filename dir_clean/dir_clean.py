@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
 import sys
 import os
 import re
 import shutil
 import argparse
+import logging
 from datetime import datetime
-
-from tqdm import tqdm
 
 CONF_FILENAME = 'dir_clean.conf'
 
 RETURN_CODE_CONF_FILE_NOT_FOUND = 1
+
+log = logging.getLogger(__name__)
 
 
 def parse_cmdline():
@@ -34,13 +34,15 @@ def remove(file_or_path):
         shutil.rmtree(file_or_path, ignore_errors=True)
 
     if os.path.exists(file_or_path):
-        print('WARNING: %s remove failed!' % file_or_path)
+        log.warning('%s remove failed!' % file_or_path)
 
 
-def clean(conf_item, dry_run=False):
+def clean(conf_tuple, dry_run=False):
     now = datetime.now()
 
-    path, regex, keep_days = conf_item
+    path, regex, keep_days = conf_tuple
+    log.info('---- path: %s ---- regex: %s ---- keep-days: %d ----' % (path, regex, keep_days))
+
     for rela_path in os.listdir(path):
 
         modify_date = None
@@ -65,7 +67,7 @@ def clean(conf_item, dry_run=False):
         if days <= keep_days:
             continue
 
-        print('removing %s  (%s => %d > %d days)' % (abs_filepath, modify_date.date().isoformat(), days, keep_days))
+        log.info('removing %s  (%s => %d > %d days)' % (abs_filepath, modify_date.date().isoformat(), days, keep_days))
         if not dry_run:
             remove(abs_filepath)
 
@@ -75,13 +77,13 @@ def main():
 
     conf_file = opts.conf_file or CONF_FILENAME
     if not os.path.isfile(conf_file):
-        print('%s not exists!' % conf_file)
+        log.error('%s not exists!' % conf_file)
         return RETURN_CODE_CONF_FILE_NOT_FOUND
 
     with open(CONF_FILENAME) as f:
         lines = list(filter(lambda x: x and not x.startswith('#'), map(str.strip, f.readlines())))
 
-    conf_items = []
+    conf_tuples = []
     for line in lines:
         regex = None
         days = opts.keep_days
@@ -97,11 +99,10 @@ def main():
         else:
             raise RuntimeError('config line should be <path>,[regex],[keep-days]')
 
-        print('---- path: %s ---- regex: %s ---- days: %d ----' % (path, regex, days))
-        conf_items.append((path, regex, days))
+        conf_tuples.append((path, regex, days))
 
-    for conf_item in tqdm(conf_items, desc='cleaning'):
-        clean(conf_item, opts.dry_run)
+    for conf_tuple in conf_tuples:
+        clean(conf_tuple, opts.dry_run)
 
     return 0
 

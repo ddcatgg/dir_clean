@@ -1,6 +1,6 @@
 [project]
 name = "dir_clean"
-version = "0.0.1"
+version = "0.1.0"
 authors = [
   { name="DDGG", email="ddcatgg@gmail.com" },
 ]
@@ -15,7 +15,7 @@ classifiers = [
 ]
 keywords = ['run', 'tool']
 requires-python = ">=2.7,>=3.6"
-dependencies = ['tqdm']
+dependencies = []
 
 [project.urls]
 "Homepage" = "https://github.com/ddcatgg/dir_clean"
