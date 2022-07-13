@@ -43,7 +43,7 @@ Example:
 By default, the modification date of the file or directory will be read as a comparison with the current date, but you can also specify the date of a file or directory through the regular expression.
 
 ```
-/services/www/log,.+?-(?P<m>\d{2})-(?P<d>\d{2})-(?P<y>\d{4})\.log,7
+/services/www/log,.+?-(?P<m>\d{2})-(?P<d>\d{2})-(?P<y>\d{4})\.log$,7
 ```
 
 
